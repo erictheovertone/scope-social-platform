@@ -4,9 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 interface ProfilePageProps {
-  params: Promise<{
+  params: {
     username: string;
-  }>;
+  };
 }
 
 export default function ProfilePage({ params }: ProfilePageProps) {
