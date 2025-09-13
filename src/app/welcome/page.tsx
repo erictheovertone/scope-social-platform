@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
+// import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useLogin } from '@privy-io/react-auth';
 
-const imgScopeLogo1 = "/scope-logo.svg";
+// const imgScopeLogo1 = "/scope-logo.svg";
 
 export default function Welcome() {
   const [isLoading, setIsLoading] = useState(true);

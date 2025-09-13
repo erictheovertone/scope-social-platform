@@ -3,13 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-interface ProfilePageProps {
-  params: {
-    username: string;
-  };
-}
-
-export default function ProfilePage({ params }: ProfilePageProps) {
+export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'main' | 'collected'>('main');
   const [zoomLevel, setZoomLevel] = useState<'1x' | '2x'>('2x');
   
