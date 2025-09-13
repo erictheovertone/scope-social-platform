@@ -2,22 +2,17 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { PostsGrid } from '@/components/GridLayouts';
-import { mockProfile } from '@/lib/mockData';
 
 interface ProfilePageProps {
-  params: {
+  params: Promise<{
     username: string;
-  };
+  }>;
 }
 
 export default function ProfilePage({ params }: ProfilePageProps) {
   const [activeTab, setActiveTab] = useState<'main' | 'collected'>('main');
   const [zoomLevel, setZoomLevel] = useState<'1x' | '2x'>('2x');
   
-  // For now, use mock data. Later this will fetch from database based on username
-  const profile = mockProfile;
-
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
@@ -36,14 +31,10 @@ export default function ProfilePage({ params }: ProfilePageProps) {
       <div className="max-w-6xl mx-auto p-4">
         {/* Profile Header */}
         <div className="flex items-start space-x-6 mb-8 p-4">
-          <img
-            src={profile.profileImageUrl}
-            alt={profile.username}
-            className="w-16 h-16 object-cover"
-          />
+          <div className="w-16 h-16 bg-gray-600 rounded"></div>
           <div className="flex-1">
-            <h1 className="text-xl font-bold mb-2">{profile.username}</h1>
-            <p className="text-sm text-gray-300 mb-4 max-w-md">{profile.bio}</p>
+            <h1 className="text-xl font-bold mb-2">@username</h1>
+            <p className="text-sm text-gray-300 mb-4 max-w-md">Profile bio will appear here</p>
             <div className="text-xs text-gray-400 font-mono">
               <span className="mr-6">Value: $742,858</span>
               <span className="mr-6">Work Posts: 1,403</span>
@@ -53,7 +44,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           
           {/* Zoom Controls */}
           <div className="flex items-center space-x-2">
-            <span className="text-sm">{profile.gridLayout}</span>
+            <span className="text-sm">2x super wide</span>
             <div className="flex border border-gray-600">
               <button
                 onClick={() => setZoomLevel('1x')}
@@ -99,21 +90,14 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           </button>
         </div>
 
-        {/* Posts Grid */}
+        {/* Posts Grid Placeholder */}
         <div className={`${zoomLevel === '1x' ? 'scale-75 origin-top-left' : ''}`}>
-          {activeTab === 'main' ? (
-            <PostsGrid
-              posts={profile.posts}
-              layout={profile.gridLayout}
-              className="mb-8"
-            />
-          ) : (
-            <PostsGrid
-              posts={profile.collectedPosts}
-              layout={profile.gridLayout}
-              className="mb-8"
-            />
-          )}
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="bg-gray-800 h-48 rounded"></div>
+            <div className="bg-gray-800 h-48 rounded"></div>
+            <div className="bg-gray-800 h-48 rounded"></div>
+            <div className="bg-gray-800 h-48 rounded"></div>
+          </div>
         </div>
       </div>
     </div>
