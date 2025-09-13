@@ -7,6 +7,12 @@ export default function GridLayout() {
   const router = useRouter();
   const [selectedLayout, setSelectedLayout] = useState<string>("");
 
+  const handleLayoutSelect = (layoutId: string) => {
+    console.log(`Selected layout: ${layoutId}`);
+    // Save the selection and redirect to homepage
+    router.push("/transition");
+  };
+
   const handleContinue = () => {
     console.log({ selectedLayout });
     router.push("/profile");
@@ -32,7 +38,7 @@ export default function GridLayout() {
         {/* 2x super wide 2.4:1 */}
         <div 
           className={`w-full h-[60px] border border-white bg-transparent cursor-pointer flex items-center px-4 hover:bg-white hover:text-black transition-colors duration-200 ${selectedLayout === '2x-super-wide' ? 'bg-white text-black' : ''}`}
-          onClick={() => setSelectedLayout('2x-super-wide')}
+          onClick={() => handleLayoutSelect('2x-super-wide')}
         >
           <span className="font-['IBM_Plex_Mono'] font-medium text-[11px] tracking-[-0.22px] leading-[140%]">
             2x super wide 2.4:1
@@ -42,7 +48,7 @@ export default function GridLayout() {
         {/* 1x super wide 2.4:1 */}
         <div 
           className={`w-full h-[60px] border border-white bg-transparent cursor-pointer flex items-center px-4 hover:bg-white hover:text-black transition-colors duration-200 ${selectedLayout === '1x-super-wide' ? 'bg-white text-black' : ''}`}
-          onClick={() => setSelectedLayout('1x-super-wide')}
+          onClick={() => handleLayoutSelect('1x-super-wide')}
         >
           <span className="font-['IBM_Plex_Mono'] font-medium text-[11px] tracking-[-0.22px] leading-[140%]">
             1x super wide 2.4:1
@@ -52,7 +58,7 @@ export default function GridLayout() {
         {/* 2x regular wide 16:9 */}
         <div 
           className={`w-full h-[60px] border border-white bg-transparent cursor-pointer flex items-center px-4 hover:bg-white hover:text-black transition-colors duration-200 ${selectedLayout === '2x-regular-wide' ? 'bg-white text-black' : ''}`}
-          onClick={() => setSelectedLayout('2x-regular-wide')}
+          onClick={() => handleLayoutSelect('2x-regular-wide')}
         >
           <span className="font-['IBM_Plex_Mono'] font-medium text-[11px] tracking-[-0.22px] leading-[140%]">
             2x regular wide 16:9
