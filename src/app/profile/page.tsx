@@ -7,7 +7,6 @@ import BottomToolbar from "@/components/BottomToolbar";
 import { getProfile, getUserByPrivyId } from "@/lib/userService";
 
 export default function Profile() {
-  const router = useRouter();
   const { user } = usePrivy();
   const [isDataDropdownOpen, setIsDataDropdownOpen] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);

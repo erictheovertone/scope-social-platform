@@ -2,7 +2,7 @@ import { supabase } from './supabase'
 import type { User, Profile } from './supabase'
 
 // Sync Privy user with Supabase
-export const syncUserWithSupabase = async (privyUser: any): Promise<User | null> => {
+export const syncUserWithSupabase = async (privyUser: { id: string; wallet?: { address: string } }): Promise<User | null> => {
   console.log('syncUserWithSupabase called with:', privyUser);
   
   try {
@@ -119,7 +119,7 @@ export const uploadImage = async (file: File, bucket: string = 'profile-images')
     const fileExt = file.name.split('.').pop()
     const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
     
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(bucket)
       .upload(fileName, file, {
         cacheControl: '3600',

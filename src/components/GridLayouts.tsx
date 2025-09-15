@@ -7,7 +7,7 @@ interface GridLayoutProps {
 }
 
 export function PostsGrid({ posts, layout, className = '' }: GridLayoutProps) {
-  const renderPost = (post: Post, index: number) => (
+  const renderPost = (post: Post) => (
     <div key={post.id} className="relative group cursor-pointer">
       <img
         src={post.imageUrl}
@@ -29,7 +29,7 @@ export function PostsGrid({ posts, layout, className = '' }: GridLayoutProps) {
         <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${className}`}>
           {posts.map((post, index) => (
             <div key={post.id} className="aspect-video">
-              {renderPost(post, index)}
+              {renderPost(post)}
             </div>
           ))}
         </div>
@@ -40,7 +40,7 @@ export function PostsGrid({ posts, layout, className = '' }: GridLayoutProps) {
         <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${className}`}>
           {posts.map((post, index) => (
             <div key={post.id} className="aspect-[2.4/1]">
-              {renderPost(post, index)}
+              {renderPost(post)}
             </div>
           ))}
         </div>
@@ -51,7 +51,7 @@ export function PostsGrid({ posts, layout, className = '' }: GridLayoutProps) {
         <div className={`grid grid-cols-1 gap-4 ${className}`}>
           {posts.map((post, index) => (
             <div key={post.id} className="aspect-video">
-              {renderPost(post, index)}
+              {renderPost(post)}
             </div>
           ))}
         </div>
@@ -62,7 +62,7 @@ export function PostsGrid({ posts, layout, className = '' }: GridLayoutProps) {
         <div className={`grid grid-cols-1 gap-4 ${className}`}>
           {posts.map((post, index) => (
             <div key={post.id} className="aspect-[2.4/1]">
-              {renderPost(post, index)}
+              {renderPost(post)}
             </div>
           ))}
         </div>
@@ -73,7 +73,7 @@ export function PostsGrid({ posts, layout, className = '' }: GridLayoutProps) {
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 ${className}`}>
           {posts.map((post, index) => (
             <div key={post.id} className="aspect-[4/3]">
-              {renderPost(post, index)}
+              {renderPost(post)}
             </div>
           ))}
         </div>
@@ -89,7 +89,7 @@ export function PostsGrid({ posts, layout, className = '' }: GridLayoutProps) {
             
             return (
               <div key={post.id} className={randomAspect}>
-                {renderPost(post, index)}
+                {renderPost(post)}
               </div>
             );
           })}
@@ -101,7 +101,7 @@ export function PostsGrid({ posts, layout, className = '' }: GridLayoutProps) {
         <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${className}`}>
           {posts.map((post, index) => (
             <div key={post.id} className="aspect-[2.4/1]">
-              {renderPost(post, index)}
+              {renderPost(post)}
             </div>
           ))}
         </div>
