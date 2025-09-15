@@ -35,7 +35,7 @@ export default function ProfileSetup() {
     <div className="bg-black relative w-[375px] h-[900px] mx-auto">
       {/* Red dot logo - positioned 10px from corners */}
       <div className="absolute left-[10px] top-[10px] w-[15px] h-[15px]">
-        <div className="w-[15px] h-[15px] bg-[#EF4444] rounded-full"></div>
+        <div className="w-[15px] h-[15px] bg-[#FF0000] rounded-full"></div>
       </div>
 
       {/* Profile Setup Title - stacked on separate lines, moved down */}

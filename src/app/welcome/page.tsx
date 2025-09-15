@@ -40,9 +40,10 @@ export default function Welcome() {
         <div style={{
           width: '32px',
           height: '32px',
-          backgroundColor: '#ef4444',
+          backgroundColor: '#FF0000',
           borderRadius: '50%',
-          animation: 'swift-bounce 0.4s infinite'
+          animation: 'swift-bounce 0.4s infinite',
+          transform: 'translateY(-15px)'
         }}></div>
       </div>
     );
