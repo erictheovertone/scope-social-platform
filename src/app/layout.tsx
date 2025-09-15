@@ -1,19 +1,10 @@
 'use client';
 
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata } from "next";
 import "./globals.css";
-import { PrivyProvider } from '@privy-io/react-auth';
+import { PrivyProvider } from "@privy-io/react-auth";
+// import { UserSyncProvider } from "@/components/UserSyncProvider";
 import { privyConfig, PRIVY_APP_ID } from '@/lib/privy';
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export default function RootLayout({
   children,
@@ -31,7 +22,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-black text-white font-mono antialiased`}
+        className="bg-black text-white font-mono antialiased"
         suppressHydrationWarning
       >
         <PrivyProvider

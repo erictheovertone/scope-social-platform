@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { usePrivy } from "@privy-io/react-auth";
 import BottomToolbar from "@/components/BottomToolbar";
+import { getProfile, getUserByPrivyId } from "@/lib/userService";
 
 export default function Profile() {
   const router = useRouter();
+  const { user } = usePrivy();
   const [isDataDropdownOpen, setIsDataDropdownOpen] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [userProfile, setUserProfile] = useState({
@@ -23,14 +26,46 @@ export default function Profile() {
     following: 122
   });
 
-  // Load user profile data from localStorage
   useEffect(() => {
-    const savedProfile = localStorage.getItem('userProfile');
-    if (savedProfile) {
-      const profileData = JSON.parse(savedProfile);
-      setUserProfile(profileData);
-    }
-  }, []);
+    const loadProfile = async () => {
+      if (!user) return;
+
+      try {
+        // First try to get profile from Supabase
+        const supabaseUser = await getUserByPrivyId(user.id);
+        if (supabaseUser) {
+          const profile = await getProfile(supabaseUser.id);
+          if (profile) {
+            setUserProfile({
+              displayName: profile.display_name || "Eric",
+              username: profile.username || "overtone", 
+              bio: profile.bio || "I tell stories with visuals and sound.\nFilmmaker. Father. Anamorphic lover",
+              profileImage: profile.profile_image_url || null
+            });
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Error loading profile from Supabase:', error);
+      }
+
+      // Fallback to localStorage
+      const savedProfile = localStorage.getItem('userProfile');
+      if (savedProfile) {
+        try {
+          const profileData = JSON.parse(savedProfile);
+          setUserProfile(prev => ({
+            ...prev,
+            ...profileData
+          }));
+        } catch (error) {
+          console.error('Error parsing saved profile data:', error);
+        }
+      }
+    };
+
+    loadProfile();
+  }, [user]);
 
   // Simulate real-time analytics updates
   useEffect(() => {

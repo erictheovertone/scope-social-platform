@@ -1,32 +1,104 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { usePrivy } from "@privy-io/react-auth";
+import { saveProfile, uploadImage, getUserByPrivyId, syncUserWithSupabase } from "@/lib/userService";
 
 export default function ProfileSetup() {
   const router = useRouter();
+  const { user } = usePrivy();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleContinue = () => {
-    // Save profile data to localStorage for persistence
-    const profileData = {
-      username,
-      displayName,
-      bio,
-      profileImage
+  // Sync user with Supabase when component mounts
+  useEffect(() => {
+    const syncUser = async () => {
+      if (user) {
+        console.log('Profile Setup: Syncing user with Supabase:', user.id);
+        try {
+          const result = await syncUserWithSupabase(user);
+          console.log('User sync result:', result);
+        } catch (error) {
+          console.error('Failed to sync user with Supabase:', error);
+        }
+      }
     };
-    localStorage.setItem('userProfile', JSON.stringify(profileData));
-    console.log({ username, displayName, bio, profileImage });
-    router.push("/profile/grid-layout");
+
+    syncUser();
+  }, [user]);
+
+  const handleContinue = async () => {
+    setIsLoading(true);
+    
+    try {
+      // Always save to localStorage first for immediate functionality
+      const profileData = {
+        username,
+        displayName,
+        bio,
+        profileImage
+      };
+      localStorage.setItem('userProfile', JSON.stringify(profileData));
+
+      // Try to save to Supabase if user exists and database is set up
+      if (user) {
+        try {
+          const supabaseUser = await getUserByPrivyId(user.id);
+          if (supabaseUser) {
+            let profileImageUrl = profileImage;
+
+            // Upload image to Supabase Storage if a new file was selected
+            if (profileImageFile) {
+              profileImageUrl = await uploadImage(profileImageFile, 'profile-images');
+            }
+
+            // Save profile to Supabase
+            await saveProfile(supabaseUser.id, {
+              displayName,
+              username,
+              bio,
+              profileImageUrl: profileImageUrl || undefined
+            });
+
+            // Update localStorage with Supabase URL if upload succeeded
+            if (profileImageUrl !== profileImage) {
+              const updatedProfileData = {
+                ...profileData,
+                profileImage: profileImageUrl
+              };
+              localStorage.setItem('userProfile', JSON.stringify(updatedProfileData));
+            }
+
+            console.log('Profile saved to Supabase successfully');
+          } else {
+            console.log('User not found in Supabase, using localStorage only');
+          }
+        } catch (supabaseError) {
+          console.log('Supabase save failed, continuing with localStorage:', supabaseError);
+        }
+      }
+
+      // Always proceed to next step
+      router.push("/profile/grid-layout");
+    } catch (error) {
+      console.error('Error in profile setup:', error);
+      // Even if everything fails, still proceed
+      router.push("/profile/grid-layout");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setProfileImageFile(file); // Store the actual file for upload
       const reader = new FileReader();
       reader.onload = (e) => {
         setProfileImage(e.target?.result as string);
@@ -151,18 +223,19 @@ export default function ProfileSetup() {
       >
         <button
           onClick={handleContinue}
-          className="w-full h-full border border-white bg-transparent text-white hover:bg-white hover:text-black transition-colors duration-200 flex items-center justify-center cursor-pointer"
+          disabled={isLoading}
+          className="w-full h-full border border-white bg-transparent text-white hover:bg-white hover:text-black transition-colors duration-200 flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
             width: '100%',
             height: '100%',
             backgroundColor: 'transparent',
             border: '1px solid white',
             color: 'white',
-            cursor: 'pointer'
+            cursor: isLoading ? 'not-allowed' : 'pointer'
           }}
         >
           <span className="font-['IBM_Plex_Mono'] font-medium text-white text-[11px] tracking-[-0.22px] leading-[140%] hover:text-black">
-            Continue
+            {isLoading ? 'Saving...' : 'Continue'}
           </span>
         </button>
       </div>
