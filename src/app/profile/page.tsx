@@ -8,6 +8,12 @@ export default function Profile() {
   const router = useRouter();
   const [isDataDropdownOpen, setIsDataDropdownOpen] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [userProfile, setUserProfile] = useState({
+    displayName: "Eric",
+    username: "overtone",
+    bio: "I tell stories with visuals and sound.\nFilmmaker. Father. Anamorphic lover",
+    profileImage: null as string | null
+  });
   const [analytics, setAnalytics] = useState({
     value: 723123,
     volume24h: 18235,
@@ -16,6 +22,15 @@ export default function Profile() {
     followers: 12345,
     following: 122
   });
+
+  // Load user profile data from localStorage
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('userProfile');
+    if (savedProfile) {
+      const profileData = JSON.parse(savedProfile);
+      setUserProfile(profileData);
+    }
+  }, []);
 
   // Simulate real-time analytics updates
   useEffect(() => {
@@ -121,35 +136,40 @@ export default function Profile() {
 
       {/* Profile Image */}
       <div className="absolute left-[10px] top-[76px] w-[80px] h-[80px] bg-[#333333] overflow-hidden">
-        <img 
-          src="/api/placeholder/80/80" 
-          alt="Profile" 
-          className="w-full h-full object-cover"
-        />
+        {userProfile.profileImage ? (
+          <img 
+            src={userProfile.profileImage} 
+            alt="Profile" 
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-[#333333] flex items-center justify-center">
+            <span className="text-white text-[30px] font-thin">+</span>
+          </div>
+        )}
       </div>
 
       {/* Name */}
       <div className="absolute left-[97px] top-[82.5px] transform -translate-y-1/2">
         <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[11px] tracking-[-0.22px] leading-[1.4]">
-          Eric
+          {userProfile.displayName}
         </p>
       </div>
 
       {/* Handle */}
       <div className="absolute left-[97px] top-[96.5px] transform -translate-y-1/2">
         <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[1.4]">
-          @overtone
+          @{userProfile.username}
         </p>
       </div>
 
       {/* Bio */}
       <div className="absolute left-[97px] top-[146px] transform -translate-y-1/2">
-        <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[7px] tracking-[-0.14px] leading-[1.4] mb-0">
-          I tell stories with visuals and sound.
-        </p>
-        <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[7px] tracking-[-0.14px] leading-[1.4]">
-          Filmmaker. Father. Anamorphic lover
-        </p>
+        {userProfile.bio.split('\n').map((line, index) => (
+          <p key={index} className="font-['IBM_Plex_Mono'] font-medium text-white text-[7px] tracking-[-0.14px] leading-[1.4] mb-0">
+            {line}
+          </p>
+        ))}
       </div>
 
       {/* Navigation Tabs */}

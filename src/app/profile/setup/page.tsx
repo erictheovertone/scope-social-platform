@@ -12,6 +12,14 @@ export default function ProfileSetup() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
   const handleContinue = () => {
+    // Save profile data to localStorage for persistence
+    const profileData = {
+      username,
+      displayName,
+      bio,
+      profileImage
+    };
+    localStorage.setItem('userProfile', JSON.stringify(profileData));
     console.log({ username, displayName, bio, profileImage });
     router.push("/profile/grid-layout");
   };

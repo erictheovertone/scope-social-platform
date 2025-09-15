@@ -7,7 +7,14 @@ import BottomToolbar from "@/components/BottomToolbar";
 import Link from "next/link";
 
 export default function Home() {
-  // This is the home feed page - no redirect needed
+  const { authenticated } = usePrivy();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authenticated) {
+      router.push('/welcome');
+    }
+  }, [authenticated, router]);
 
   return (
     <div className="bg-black relative w-[375px] h-[812px] mx-auto">
