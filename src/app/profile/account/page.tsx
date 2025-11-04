@@ -24,28 +24,22 @@ export default function AccountSettings() {
     setIsSaving(true);
     
     try {
-      // Update user profile in Supabase
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('privy_id', user.id)
-        .single();
+      // Update user profile in Supabase using privy_id directly
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          privy_id: user.id,
+          display_name: settings.displayName,
+          username: settings.username,
+          bio: settings.bio,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'privy_id'
+        });
 
-      if (userData) {
-        const { error } = await supabase
-          .from('profiles')
-          .upsert({
-            user_id: userData.id,
-            display_name: settings.displayName,
-            username: settings.username,
-            bio: settings.bio,
-            updated_at: new Date().toISOString()
-          });
-
-        if (error) {
-          console.error('Error updating profile:', error);
-          throw error;
-        }
+      if (error) {
+        console.error('Error updating profile:', error);
+        throw error;
       }
       
       setShowSuccess(true);
@@ -63,7 +57,7 @@ export default function AccountSettings() {
   };
 
   return (
-    <div className="bg-black relative w-[375px] h-[812px] mx-auto">
+    <div className="bg-black relative w-[430px] h-[932px] mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-[#333333]">
         <button 

@@ -239,14 +239,14 @@ export default function Profile() {
           MAIN
         </span>
       </div>
-      <div className="absolute left-[325px] top-[234px] transform -translate-y-1/2">
+      <div className="absolute right-[4px] top-[234px] transform -translate-y-1/2">
         <span style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="font-medium text-white text-[9px] tracking-[-0.18px] leading-[1.4]">
           COLLECTED
         </span>
       </div>
 
-      {/* Posts Grid or Create First Post */}
-      <div className="absolute left-[10px] top-[250px] w-[355px] h-[400px]">
+      {/* Posts Grid */}
+      <div className="flex-1 px-1 pb-20">
         {userPosts.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
             <div className="text-center mb-8">
@@ -264,40 +264,42 @@ export default function Profile() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-1 overflow-y-auto h-full auto-rows-min">
-            {userPosts.map((post) => {
-              // Determine grid span and aspect ratio based on layout
-              const getLayoutClasses = (layoutId: string) => {
-                switch (layoutId) {
-                  case 'horizontal':
-                    return 'col-span-2 aspect-[2/1]';
-                  case 'vertical':
-                    return 'col-span-1 aspect-[1/2] row-span-2';
-                  case 'square':
-                  default:
-                    return 'col-span-1 aspect-square';
-                }
-              };
+          <div className="overflow-y-auto h-full">
+            <div className="grid grid-cols-3 gap-1 px-1 auto-rows-min">
+              {userPosts.map((post) => {
+                // Determine grid span and aspect ratio based on layout
+                const getLayoutClasses = (layoutId: string) => {
+                  switch (layoutId) {
+                    case 'horizontal':
+                      return 'col-span-2 aspect-[2/1]';
+                    case 'vertical':
+                      return 'col-span-1 aspect-[1/2] row-span-2';
+                    case 'square':
+                    default:
+                      return 'col-span-1 aspect-square';
+                  }
+                };
 
-              return (
-                <div
-                  key={post.id}
-                  className={`bg-[#333333] rounded overflow-hidden ${getLayoutClasses(post.layout_id)}`}
-                >
-                  {post.media_urls?.[0] ? (
-                    <img
-                      src={post.media_urls[0]}
-                      alt={post.caption || 'Post'}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-[#333333] flex items-center justify-center">
-                      <span className="text-[#666666] text-xs">No media</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                return (
+                  <div
+                    key={post.id}
+                    className={`bg-[#333333] rounded overflow-hidden ${getLayoutClasses(post.layout_id)}`}
+                  >
+                    {post.media_urls?.[0] ? (
+                      <img
+                        src={post.media_urls[0]}
+                        alt={post.caption || 'Post'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#333333] flex items-center justify-center">
+                        <span className="text-[#666666] text-xs">No media</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
