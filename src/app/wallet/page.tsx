@@ -17,7 +17,7 @@ export default function Wallet() {
             <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
-        <h1 className="font-['IBM_Plex_Mono'] font-medium text-white text-[18px] tracking-[-0.36px]">
+        <h1 style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="font-medium text-white text-[18px] tracking-[-0.36px]">
           SCOPE
         </h1>
         <button className="text-white">
@@ -34,12 +34,12 @@ export default function Wallet() {
             <div className="w-8 h-8 bg-orange-500 rounded-full"></div>
           </div>
           <div>
-            <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[16px] tracking-[-0.32px]">
+            <p style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="font-medium text-white text-[16px] tracking-[-0.32px]">
               @whoisbert
             </p>
             <div className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              <p className="font-['IBM_Plex_Mono'] font-normal text-[#888888] text-[12px] tracking-[-0.24px]">
+              <p style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="font-normal text-[#888888] text-[12px] tracking-[-0.24px]">
                 0xc6b0...4cf9
               </p>
             </div>
@@ -52,25 +52,25 @@ export default function Wallet() {
 
       {/* Balance */}
       <div className="text-center mb-8">
-        <p className="font-['IBM_Plex_Mono'] font-normal text-[#888888] text-[14px] tracking-[-0.28px] mb-2">
+        <p style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="font-normal text-[#888888] text-[14px] tracking-[-0.28px] mb-2">
           Total available balance
         </p>
-        <p className="font-['IBM_Plex_Mono'] font-bold text-white text-[48px] tracking-[-0.96px] leading-[1.1]">
+        <p style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="font-bold text-white text-[48px] tracking-[-0.96px] leading-[1.1]">
           $4.01
         </p>
       </div>
 
       {/* Action Buttons */}
       <div className="flex justify-center space-x-4 mb-8 px-4">
-        <button className="bg-[#333333] text-white px-6 py-3 rounded-full font-['IBM_Plex_Mono'] font-medium text-[14px] tracking-[-0.28px] flex items-center">
+        <button style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="bg-[#333333] text-white px-6 py-3 rounded-full font-medium text-[14px] tracking-[-0.28px] flex items-center hover:bg-[#444444] transition-colors">
           <span className="mr-2">+</span>
           Add money
         </button>
-        <button className="bg-[#333333] text-white px-6 py-3 rounded-full font-['IBM_Plex_Mono'] font-medium text-[14px] tracking-[-0.28px] flex items-center">
+        <button style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="bg-[#333333] text-white px-6 py-3 rounded-full font-medium text-[14px] tracking-[-0.28px] flex items-center hover:bg-[#444444] transition-colors">
           <span className="mr-2">$</span>
           Cash out
         </button>
-        <button className="bg-[#333333] text-white px-6 py-3 rounded-full font-['IBM_Plex_Mono'] font-medium text-[14px] tracking-[-0.28px] flex items-center">
+        <button style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="bg-[#333333] text-white px-6 py-3 rounded-full font-medium text-[14px] tracking-[-0.28px] flex items-center hover:bg-[#444444] transition-colors">
           <span className="mr-2">↗</span>
           Send
         </button>

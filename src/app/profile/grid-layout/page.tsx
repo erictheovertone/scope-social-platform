@@ -1,13 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { usePrivy } from "@privy-io/react-auth";
 import Link from "next/link";
+import { setUserGridLayout, getUserGridLayout } from "@/lib/gridLayoutService";
 
 export default function GridLayout() {
   const router = useRouter();
+  const { user } = usePrivy();
   const [selectedLayout, setSelectedLayout] = useState<string>("");
   const [showPreview, setShowPreview] = useState(false);
+
+  // Load user's current grid preference
+  useEffect(() => {
+    if (user?.id) {
+      const currentLayout = getUserGridLayout(user.id);
+      if (currentLayout) {
+        setSelectedLayout(currentLayout.layoutId);
+      }
+    }
+  }, [user?.id]);
 
   const handleLayoutSelect = (layoutId: string) => {
     setSelectedLayout(layoutId);
@@ -15,8 +28,32 @@ export default function GridLayout() {
   };
 
   const handleContinue = () => {
-    if (selectedLayout) {
-      router.push("/transition");
+    if (selectedLayout && user?.id) {
+      // Save the user's grid layout preference
+      const layoutNames = {
+        '2x-super-wide': '2x Super Wide',
+        '1x-super-wide': '1x Super Wide', 
+        '2x-regular-wide': '2x Regular Wide',
+        '3x-square': '3x Square',
+        'collage': 'Collage'
+      };
+      
+      const aspectRatios = {
+        '2x-super-wide': '21:9',
+        '1x-super-wide': '21:9', 
+        '2x-regular-wide': '16:9',
+        '3x-square': '1:1',
+        'collage': 'mixed'
+      };
+
+      setUserGridLayout(
+        user.id, 
+        selectedLayout, 
+        layoutNames[selectedLayout as keyof typeof layoutNames], 
+        aspectRatios[selectedLayout as keyof typeof aspectRatios]
+      );
+      
+      router.push("/profile");
     }
   };
 
