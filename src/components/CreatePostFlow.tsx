@@ -65,7 +65,7 @@ interface CreatePostFlowProps {
 }
 
 export default function CreatePostFlow({ isOpen, onClose }: CreatePostFlowProps) {
-  const [step, setStep] = useState<'media' | 'caption'>('media');
+  const [step, setStep] = useState<'media' | 'edit' | 'posting'>('media');
   const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([]);
   const [selectedLayout, setSelectedLayout] = useState<GridLayout>(GRID_LAYOUTS[0]);
   const [caption, setCaption] = useState('');
@@ -179,7 +179,7 @@ export default function CreatePostFlow({ isOpen, onClose }: CreatePostFlowProps)
         <button onClick={onClose} className="text-white text-lg">×</button>
         <h2 className="font-['IBM_Plex_Mono'] font-medium text-white text-[16px]">New Post</h2>
         <button 
-          onClick={() => setStep('caption')}
+          onClick={() => setStep('edit')}
           disabled={selectedMedia.length === 0}
           className={`font-['IBM_Plex_Mono'] font-medium text-[14px] ${
             selectedMedia.length > 0 ? 'text-[#FF0000] cursor-pointer' : 'text-[#666666]'
@@ -256,11 +256,11 @@ export default function CreatePostFlow({ isOpen, onClose }: CreatePostFlowProps)
 
 
 
-  const renderCaptionStep = () => (
+  const renderEditStep = () => (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-[#333333]">
         <button onClick={() => setStep('media')} className="text-white text-lg">←</button>
-        <h2 className="font-['IBM_Plex_Mono'] font-medium text-white text-[16px]">New Post</h2>
+        <h2 className="font-['IBM_Plex_Mono'] font-medium text-white text-[16px]">Edit & Post</h2>
         <button 
           onClick={handlePost}
           disabled={isUploading}
@@ -272,15 +272,16 @@ export default function CreatePostFlow({ isOpen, onClose }: CreatePostFlowProps)
         </button>
       </div>
 
-      <div className="flex-1 p-4">
-        <div className="flex mb-4">
-          <div className="w-16 h-16 bg-[#333333] rounded-lg mr-3 overflow-hidden flex-shrink-0">
+      <div className="flex-1 flex">
+        {/* Image Preview */}
+        <div className="flex-1 p-4">
+          <div className="w-full h-64 bg-[#1A1A1A] border border-[#333333] rounded-lg overflow-hidden mb-4">
             {selectedMedia[0] && (
-              selectedMedia[0].type === 'image' ? (
-                <img src={selectedMedia[0].url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <video src={selectedMedia[0].url} className="w-full h-full object-cover" />
-              )
+              <img
+                src={selectedMedia[0].url}
+                alt="Preview"
+                className="w-full h-full object-contain"
+              />
             )}
           </div>
           <textarea
@@ -310,7 +311,7 @@ export default function CreatePostFlow({ isOpen, onClose }: CreatePostFlowProps)
     <div className="fixed inset-0 bg-black bg-opacity-90 z-[200] flex items-center justify-center">
       <div className="bg-black border border-[#333333] w-[375px] h-[600px] relative overflow-hidden">
         {step === 'media' && renderMediaStep()}
-        {step === 'caption' && renderCaptionStep()}
+        {step === 'edit' && renderEditStep()}
       </div>
     </div>
   );

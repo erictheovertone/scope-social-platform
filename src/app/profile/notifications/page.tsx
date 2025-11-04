@@ -5,44 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function Notifications() {
   const router = useRouter();
-  const [notifications] = useState([
-    {
-      id: 1,
-      type: 'like',
-      user: '@filmmaker2',
-      action: 'liked your post',
-      content: 'Cinematic shot from my latest project',
-      time: '2 hours ago',
-      read: false
-    },
-    {
-      id: 2,
-      type: 'comment',
-      user: '@visualartist',
-      action: 'commented on your post',
-      content: 'Amazing composition! What lens did you use?',
-      time: '4 hours ago',
-      read: false
-    },
-    {
-      id: 3,
-      type: 'trading',
-      user: '@collector1',
-      action: 'made an offer on your content',
-      content: 'Ultra-wide landscape composition',
-      time: '1 day ago',
-      read: true
-    },
-    {
-      id: 4,
-      type: 'follow',
-      user: '@newuser',
-      action: 'started following you',
-      content: '',
-      time: '2 days ago',
-      read: true
-    }
-  ]);
+  const [notifications] = useState([]);
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -96,52 +59,55 @@ export default function Notifications() {
       </div>
 
       {/* Notifications List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-6">
         {notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full px-6">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#333333" strokeWidth="1">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-            <p className="font-['IBM_Plex_Mono'] font-medium text-[#666666] text-[16px] mt-4 text-center">
+          <div className="flex flex-col items-center justify-center h-full">
+            <div className="w-16 h-16 bg-[#333333] rounded-full mx-auto mb-4 flex items-center justify-center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666666" strokeWidth="1.5">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </div>
+            <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[14px] mb-2">
               No notifications yet
             </p>
-            <p className="font-['IBM_Plex_Mono'] font-normal text-[#666666] text-[12px] mt-2 text-center">
-              You'll see likes, comments, and trading activity here
+            <p className="font-['IBM_Plex_Mono'] text-[#888888] text-[12px]">
+              You'll see likes, comments, and follows here
             </p>
           </div>
         ) : (
-          <div className="px-4 py-2">
-            {notifications.map((notification) => (
+          <div className="space-y-3">
+            {notifications.map((notification: any) => (
               <div
                 key={notification.id}
-                className={`flex items-start p-4 mb-2 rounded-lg transition-colors hover:bg-[#1A1A1A] ${
-                  !notification.read ? 'bg-[#1A1A1A] border-l-2 border-[#FF0000]' : ''
+                className={`p-4 rounded-lg border transition-colors ${
+                  notification.read 
+                    ? 'bg-[#1A1A1A] border-[#333333]' 
+                    : 'bg-[#1A1A1A] border-[#FF0000] border-opacity-30'
                 }`}
               >
-                <div className="mr-4 mt-1">
-                  {getNotificationIcon(notification.type)}
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-1">
-                    <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[14px]">
-                      <span className="text-[#888888]">{notification.user}</span> {notification.action}
-                    </p>
-                    {!notification.read && (
-                      <div className="w-2 h-2 bg-[#FF0000] rounded-full ml-2 mt-2"></div>
-                    )}
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 mt-1">
+                    {getNotificationIcon(notification.type)}
                   </div>
-                  
-                  {notification.content && (
-                    <p className="font-['IBM_Plex_Mono'] font-normal text-[#666666] text-[12px] mb-2">
-                      "{notification.content}"
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-['IBM_Plex_Mono'] font-medium text-white text-[13px]">
+                        @{notification.user}
+                      </span>
+                      <span className={`font-['IBM_Plex_Mono'] text-[12px] ${
+                        notification.read ? 'text-[#888888]' : 'text-white'
+                      }`}>
+                        {notification.action || notification.content}
+                      </span>
+                    </div>
+                    <p className="font-['IBM_Plex_Mono'] text-[#888888] text-[11px] mt-1">
+                      {notification.content}
                     </p>
-                  )}
-                  
-                  <p className="font-['IBM_Plex_Mono'] font-normal text-[#666666] text-[11px]">
-                    {notification.time}
-                  </p>
+                    <p className="font-['IBM_Plex_Mono'] text-[#666666] text-[10px] mt-2">
+                      {notification.time}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}

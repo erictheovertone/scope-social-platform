@@ -14,12 +14,14 @@ const BottomToolbar = dynamic(() => import("@/components/BottomToolbar"), {
 });
 
 import PostItem from "@/components/PostItem";
+import Lightbox from "@/components/Lightbox";
 
 export default function Home() {
   const { authenticated } = usePrivy();
   const router = useRouter();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lightboxPost, setLightboxPost] = useState<any>(null);
 
   useEffect(() => {
     if (!authenticated) {
@@ -62,12 +64,22 @@ export default function Home() {
 
       {/* Feed Content - Optimized posts */}
       <div className="absolute left-[15px] top-[50px] w-[345px] h-[680px] overflow-y-auto">
-        {posts.map((post) => (
-          <PostItem
-            key={post.id}
-            post={post}
+        <div className="space-y-4 pb-[80px]">
+          {posts.map((post) => (
+            <div key={post.id} onClick={() => setLightboxPost(post)} className="cursor-pointer">
+              <PostItem post={post} />
+            </div>
+          ))}
+        </div>
+
+        {/* Lightbox */}
+        {lightboxPost && (
+          <Lightbox
+            post={lightboxPost}
+            isOpen={!!lightboxPost}
+            onClose={() => setLightboxPost(null)}
           />
-        ))}
+        )}
       </div>
 
       

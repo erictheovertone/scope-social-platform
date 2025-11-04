@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
+import { supabase } from "@/lib/supabase/client";
 
 export default function AccountSettings() {
   const router = useRouter();
@@ -14,13 +15,47 @@ export default function AccountSettings() {
     bio: "I tell stories with visuals and sound.\nFilmmaker. Father. Anamorphic lover"
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleSave = () => {
-    // Implementation would save to backend
-    setSaved(true);
-    setIsEditing(false);
-    setTimeout(() => setSaved(false), 2000);
+  const handleSave = async () => {
+    if (!user) return;
+    
+    setIsSaving(true);
+    
+    try {
+      // Update user profile in Supabase
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('privy_id', user.id)
+        .single();
+
+      if (userData) {
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: userData.id,
+            display_name: settings.displayName,
+            username: settings.username,
+            bio: settings.bio,
+            updated_at: new Date().toISOString()
+          });
+
+        if (error) {
+          console.error('Error updating profile:', error);
+          throw error;
+        }
+      }
+      
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    } finally {
+      setIsSaving(false);
+      setIsEditing(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -143,12 +178,12 @@ export default function AccountSettings() {
             <button
               onClick={handleSave}
               className={`w-full py-4 rounded-lg font-['IBM_Plex_Mono'] font-medium text-[16px] transition-colors ${
-                saved 
+                showSuccess 
                   ? 'bg-green-600 text-white' 
                   : 'bg-[#FF0000] text-white hover:bg-[#CC0000]'
               }`}
             >
-              {saved ? 'Saved!' : 'Save Changes'}
+              {isSaving ? 'Saving...' : showSuccess ? 'Saved!' : 'Save Changes'}
             </button>
           </div>
         )}

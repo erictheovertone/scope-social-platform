@@ -270,43 +270,30 @@ export default function Profile() {
               const getLayoutClasses = (layoutId: string) => {
                 switch (layoutId) {
                   case 'horizontal':
-                    return {
-                      gridClass: 'col-span-3',
-                      aspectClass: 'aspect-[21/9]'
-                    };
-                  case 'grid3x1':
-                    return {
-                      gridClass: 'col-span-3',
-                      aspectClass: 'aspect-[3/1]'
-                    };
+                    return 'col-span-2 aspect-[2/1]';
                   case 'vertical':
-                    return {
-                      gridClass: 'col-span-1 row-span-2',
-                      aspectClass: 'aspect-[9/16]'
-                    };
-                  case 'grid2x2':
-                    return {
-                      gridClass: 'col-span-2 row-span-2',
-                      aspectClass: 'aspect-square'
-                    };
-                  default: // single
-                    return {
-                      gridClass: 'col-span-1',
-                      aspectClass: 'aspect-square'
-                    };
+                    return 'col-span-1 aspect-[1/2] row-span-2';
+                  case 'square':
+                  default:
+                    return 'col-span-1 aspect-square';
                 }
               };
 
-              const { gridClass, aspectClass } = getLayoutClasses(post.layoutId);
-
               return (
-                <div key={post.id} className={`${gridClass} ${aspectClass} bg-[#333333] rounded-sm overflow-hidden`}>
-                  {post.mediaUrls && post.mediaUrls[0] && (
-                    <img 
-                      src={post.mediaUrls[0]} 
-                      alt={post.caption || 'Post'} 
+                <div
+                  key={post.id}
+                  className={`bg-[#333333] rounded overflow-hidden ${getLayoutClasses(post.layout_id)}`}
+                >
+                  {post.media_urls?.[0] ? (
+                    <img
+                      src={post.media_urls[0]}
+                      alt={post.caption || 'Post'}
                       className="w-full h-full object-cover"
                     />
+                  ) : (
+                    <div className="w-full h-full bg-[#333333] flex items-center justify-center">
+                      <span className="text-[#666666] text-xs">No media</span>
+                    </div>
                   )}
                 </div>
               );
