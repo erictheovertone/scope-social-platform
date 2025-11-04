@@ -47,10 +47,6 @@ export default function PostItem({ post }: { post: Post }) {
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadPostData();
-  }, [post.id, user]);
-
   const loadPostData = async () => {
     try {
       const [likesData, commentsData, likedByUser] = await Promise.all([
@@ -66,6 +62,10 @@ export default function PostItem({ post }: { post: Post }) {
       console.error('Error loading post data:', error);
     }
   };
+
+  useEffect(() => {
+    loadPostData();
+  }, [post.id, user?.id]);
 
   const handleLike = async () => {
     if (!user) return;

@@ -72,13 +72,19 @@ export default function Profile() {
     loadProfile();
   }, [user]);
 
-  // Load user posts
-  useEffect(() => {
-    if (user) {
-      const posts = getUserPosts(user.id);
-      setUserPosts(posts);
-      setAnalytics(prev => ({ ...prev, totalPosts: posts.length }));
+  const loadUserPosts = async () => {
+    if (user?.id) {
+      try {
+        const posts = await getUserPosts(user.id);
+        setUserPosts(posts);
+      } catch (error) {
+        console.error('Error loading user posts:', error);
+      }
     }
+  };
+
+  useEffect(() => {
+    loadUserPosts();
   }, [user, showCreatePost]); // Refresh when create post modal closes
 
   // Simulate real-time analytics updates
