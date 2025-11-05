@@ -239,6 +239,16 @@ export default function Profile() {
           MAIN
         </span>
       </div>
+      <div className="absolute left-1/2 top-[234px] transform -translate-x-1/2 -translate-y-1/2">
+        <button 
+          onClick={() => router.push('/profile/data')}
+          className="bg-transparent border-none p-0 cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <span style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="font-medium text-white text-[9px] tracking-[-0.18px] leading-[1.4]">
+            DATA
+          </span>
+        </button>
+      </div>
       <div className="absolute right-[4px] top-[234px] transform -translate-y-1/2">
         <span style={{ fontFamily: 'TestSöhne-Halbfett, IBM Plex Mono, monospace' }} className="font-medium text-white text-[9px] tracking-[-0.18px] leading-[1.4]">
           COLLECTED
@@ -246,7 +256,7 @@ export default function Profile() {
       </div>
 
       {/* Posts Grid */}
-      <div className="flex-1 px-1 pb-20">
+      <div className="absolute top-[260px] left-0 right-0 bottom-[100px] px-1">
         {userPosts.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
             <div className="text-center mb-8">
@@ -265,7 +275,7 @@ export default function Profile() {
           </div>
         ) : (
           <div className="overflow-y-auto h-full">
-            <div className="grid grid-cols-3 gap-1 px-1 auto-rows-min">
+            <div className="grid grid-cols-3 gap-1 auto-rows-min py-2">
               {userPosts.map((post) => {
                 // Determine grid span and aspect ratio based on layout
                 const getLayoutClasses = (layoutId: string) => {
