@@ -11,6 +11,7 @@ import Link from "next/link";
 
 export default function Profile() {
   const { user } = usePrivy();
+  const router = useRouter();
   const [isDataDropdownOpen, setIsDataDropdownOpen] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [isGearSpinning, setIsGearSpinning] = useState(false);
@@ -256,7 +257,7 @@ export default function Profile() {
       </div>
 
       {/* Posts Grid */}
-      <div className="absolute top-[260px] left-0 right-0 bottom-[100px] px-1">
+      <div className="absolute top-[260px] left-0 right-0 bottom-[100px]">
         {userPosts.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
             <div className="text-center mb-8">
@@ -274,8 +275,8 @@ export default function Profile() {
             </button>
           </div>
         ) : (
-          <div className="overflow-y-auto h-full">
-            <div className="grid grid-cols-3 gap-1 auto-rows-min py-2">
+          <div className="overflow-y-auto h-full px-[3px]">
+            <div className="grid grid-cols-3 gap-x-[2px] gap-y-[2px] auto-rows-min">
               {userPosts.map((post) => {
                 // Determine grid span and aspect ratio based on layout
                 const getLayoutClasses = (layoutId: string) => {
@@ -293,7 +294,7 @@ export default function Profile() {
                 return (
                   <div
                     key={post.id}
-                    className={`bg-[#333333] rounded overflow-hidden ${getLayoutClasses(post.layout_id)}`}
+                    className={`bg-[#333333] overflow-hidden ${getLayoutClasses(post.layout_id)}`}
                   >
                     {post.media_urls?.[0] ? (
                       <img
