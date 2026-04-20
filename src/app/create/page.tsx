@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CreatePostFlow from "@/components/CreatePostFlow";
-import BottomToolbar from "@/components/BottomToolbar";
 
 export default function CreatePage() {
   const [showCreateFlow, setShowCreateFlow] = useState(true);
@@ -22,7 +21,6 @@ export default function CreatePage() {
         onClose={handleClose} 
       />
       
-      <BottomToolbar />
     </div>
   );
 }

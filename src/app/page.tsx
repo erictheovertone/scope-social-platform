@@ -2,88 +2,79 @@
 
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { useEffect, memo, useMemo, useState } from "react";
-import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getAllPosts } from '@/lib/postsService';
-
-// Lazy load BottomToolbar for better performance
-const BottomToolbar = dynamic(() => import("@/components/BottomToolbar"), {
-  loading: () => <div className="h-[60px]" />,
-  ssr: false
-});
-
+import { getAllPosts } from "@/lib/postsService";
 import PostItem from "@/components/PostItem";
-import Lightbox from "@/components/Lightbox";
+import PostModal from "@/components/PostModal";
 
 export default function Home() {
   const { authenticated } = usePrivy();
   const router = useRouter();
   const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [lightboxPost, setLightboxPost] = useState<any>(null);
 
   useEffect(() => {
-    if (!authenticated) {
-      router.push('/welcome');
-    }
+    if (!authenticated) router.push("/welcome");
   }, [authenticated, router]);
 
   useEffect(() => {
-    const loadPosts = async () => {
+    const load = async () => {
       try {
-        const allPosts = await getAllPosts();
-        if (allPosts.length === 0) {
-          // Show mock posts if no real posts exist
+        const all = await getAllPosts();
+        if (all.length === 0) {
           setPosts([
-            { id: 'mock1', username: 'creator1', caption: 'Cinematic shot from my latest project', media_urls: [], created_at: new Date().toISOString() },
-            { id: 'mock2', username: 'filmmaker2', caption: 'Ultra-wide landscape composition', media_urls: [], created_at: new Date().toISOString() },
-            { id: 'mock3', username: 'visualartist', caption: 'Experimental grid layout design', media_urls: [], created_at: new Date().toISOString() }
+            { id: "mock1", username: "creator1",    caption: "Cinematic shot from my latest project", media_urls: [], created_at: new Date().toISOString() },
+            { id: "mock2", username: "filmmaker2",   caption: "Ultra-wide landscape composition",      media_urls: [], created_at: new Date().toISOString() },
+            { id: "mock3", username: "visualartist", caption: "Experimental grid layout design",       media_urls: [], created_at: new Date().toISOString() },
           ]);
         } else {
-          setPosts(allPosts);
+          setPosts(all);
         }
-      } catch (error) {
-        console.error('Error loading posts:', error);
-      } finally {
-        setLoading(false);
+      } catch (e) {
+        console.error("Error loading posts:", e);
       }
     };
-
-    loadPosts();
+    load();
   }, []);
 
   return (
-    <div className="bg-black relative w-[375px] h-[812px] mx-auto">
-      {/* Red dot logo - clickable link to home */}
+    <div className="bg-black relative w-[375px] min-h-screen mx-auto">
+
+      {/* Red dot */}
       <Link href="/">
-        <div className="absolute left-[10px] top-[10px] w-[15px] h-[15px] cursor-pointer">
-          <div className="w-[15px] h-[15px] bg-[#FF0000] rounded-full"></div>
+        <div className="absolute left-[4px] top-[4px] w-[11px] h-[11px] cursor-pointer">
+          <div className="w-[11px] h-[11px] bg-[#FF0000] rounded-full" />
         </div>
       </Link>
 
-      {/* Feed Content - Optimized posts */}
-      <div className="absolute left-[15px] top-[50px] w-[345px] h-[680px] overflow-y-auto">
-        <div className="space-y-4 pb-[80px]">
-          {posts.map((post) => (
-            <div key={post.id} onClick={() => setLightboxPost(post)} className="cursor-pointer">
-              <PostItem post={post} />
-            </div>
-          ))}
-        </div>
-
-        {/* Lightbox */}
-        {lightboxPost && (
-          <Lightbox
-            post={lightboxPost}
-            isOpen={!!lightboxPost}
-            onClose={() => setLightboxPost(null)}
-          />
-        )}
+      {/* SCREENING ROOM label — top-right, matches Figma */}
+      <div className="absolute right-[4px] top-[4px]">
+        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: "white", letterSpacing: "-0.2px" }}>
+          SCREENING ROOM
+        </span>
       </div>
 
-      
-      <BottomToolbar />
+      {/* Feed */}
+      <div className="absolute left-[18px] right-[18px] top-[30px] bottom-[60px] overflow-y-auto">
+        <div style={{ paddingBottom: 80 }}>
+          {posts.map((post) => (
+            <PostItem
+              key={post.id}
+              post={post}
+              onImageClick={() => setLightboxPost(post)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {lightboxPost && (
+        <PostModal
+          post={lightboxPost}
+          onClose={() => setLightboxPost(null)}
+        />
+      )}
+
     </div>
   );
 }

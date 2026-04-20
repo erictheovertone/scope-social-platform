@@ -101,12 +101,13 @@ export default function Lightbox({ post, isOpen, onClose }: LightboxProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-      <div className="relative max-w-4xl max-h-full w-full flex bg-black rounded-lg overflow-hidden">
+    <div className="fixed inset-0 bg-black z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.95)' }}>
+      <div className="relative max-w-4xl max-h-full w-full flex bg-black overflow-hidden">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 text-white hover:text-gray-300 transition-colors"
+          className="absolute top-4 right-4 z-10 text-white"
+          style={{ color: 'white' }}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="18" y1="6" x2="6" y2="18"/>
@@ -126,7 +127,7 @@ export default function Lightbox({ post, isOpen, onClose }: LightboxProps) {
         </div>
 
         {/* Sidebar with details */}
-        <div className="w-80 bg-[#1A1A1A] border-l border-[#333333] flex flex-col">
+        <div className="w-80 bg-black border-l border-[#222] flex flex-col" style={{ color: 'white' }}>
           {/* User info */}
           <div className="p-4 border-b border-[#333333]">
             <div className="flex items-center">
@@ -205,8 +206,9 @@ export default function Lightbox({ post, isOpen, onClose }: LightboxProps) {
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Add a comment..."
-                  className="flex-1 bg-[#333333] border border-[#555555] rounded px-3 py-2 text-white text-[12px] font-['IBM_Plex_Mono'] focus:border-[#FF0000] focus:outline-none"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
+                  className="flex-1 bg-transparent border-b border-[#444] px-0 py-2 text-[12px] font-['IBM_Plex_Mono'] focus:outline-none"
+                  style={{ color: 'white' }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
                 />
                 <button
                   onClick={handleAddComment}

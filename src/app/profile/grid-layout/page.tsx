@@ -27,32 +27,31 @@ export default function GridLayout() {
     setShowPreview(true);
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedLayout && user?.id) {
-      // Save the user's grid layout preference
       const layoutNames = {
         '2x-super-wide': '2x Super Wide',
-        '1x-super-wide': '1x Super Wide', 
+        '1x-super-wide': '1x Super Wide',
         '2x-regular-wide': '2x Regular Wide',
         '3x-square': '3x Square',
         'collage': 'Collage'
       };
-      
+
       const aspectRatios = {
         '2x-super-wide': '21:9',
-        '1x-super-wide': '21:9', 
+        '1x-super-wide': '21:9',
         '2x-regular-wide': '16:9',
         '3x-square': '1:1',
         'collage': 'mixed'
       };
 
-      setUserGridLayout(
-        user.id, 
-        selectedLayout, 
-        layoutNames[selectedLayout as keyof typeof layoutNames], 
+      await setUserGridLayout(
+        user.id,
+        selectedLayout,
+        layoutNames[selectedLayout as keyof typeof layoutNames],
         aspectRatios[selectedLayout as keyof typeof aspectRatios]
       );
-      
+
       router.push("/profile");
     }
   };
@@ -245,84 +244,70 @@ export default function GridLayout() {
 
       {/* Original Layout Selection - hide when preview is shown */}
       <div className={`transition-opacity duration-300 ${showPreview ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        {/* Welcome Eric. */}
-        <div className="absolute left-3 top-[54px]">
+        {/* Welcome Eric. / Choose your grid layout */}
+        <div className="absolute left-[3px] top-[30px]">
           <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[11px] tracking-[-0.22px] leading-[140%]">
-            Welcome Eric.
+            Welcome Eric. &nbsp;&nbsp;&nbsp; Choose your grid layout
           </p>
         </div>
 
-        {/* Choose your grid layout */}
-        <div className="absolute left-[134px] top-[54px]">
-          <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[11px] tracking-[-0.22px] leading-[140%]">
-            Choose your grid layout
-          </p>
+        {/* 2x super wide */}
+        <div className="absolute left-[2px] top-[77px]">
+          <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">2x super wide</p>
         </div>
-
-        {/* 2x super wide - both boxes highlight together */}
-        <div 
-          className={`absolute left-2 top-[90px] w-[367px] h-[75px] border ${selectedLayout === '2x-super-wide' ? 'border-[#FF0000]' : 'border-transparent'} cursor-pointer transition-colors duration-200`}
+        <div
+          className="absolute left-[2px] top-[99px] flex gap-[1px] cursor-pointer"
           onMouseDown={() => handleLayoutSelect('2x-super-wide')}
         >
-          <div className="absolute left-0 top-0 w-[180px] h-[75px] border border-white bg-transparent flex items-start p-2">
-            <span className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">
-              2x super wide
-            </span>
-          </div>
-          <div className="absolute left-[188px] top-0 w-[180px] h-[75px] border border-white bg-transparent"></div>
+          <div className={`w-[185px] h-[62px] border ${selectedLayout === '2x-super-wide' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
+          <div className={`w-[185px] h-[62px] border ${selectedLayout === '2x-super-wide' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
         </div>
 
         {/* 1x super wide */}
-        <div className="absolute left-2 top-[175px] w-[367px] h-[120px]">
-          <div 
-            className={`w-full h-full border ${selectedLayout === '1x-super-wide' ? 'border-[#FF0000]' : 'border-white'} bg-transparent cursor-pointer flex items-start p-2 transition-colors duration-200`}
-            onMouseDown={() => handleLayoutSelect('1x-super-wide')}
-          >
-            <span className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">
-              1x super wide
-            </span>
-          </div>
+        <div className="absolute left-[2px] top-[177px]">
+          <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">1x super wide</p>
         </div>
+        <div
+          className={`absolute left-[2px] top-[199px] w-[371px] h-[122px] border ${selectedLayout === '1x-super-wide' ? 'border-[#FF0000]' : 'border-white'} bg-transparent cursor-pointer transition-colors duration-200`}
+          onMouseDown={() => handleLayoutSelect('1x-super-wide')}
+        />
 
-        {/* 2x regular wide - both boxes highlight together */}
-        <div 
-          className={`absolute left-2 top-[305px] w-[367px] h-[100px] border ${selectedLayout === '2x-regular-wide' ? 'border-[#FF0000]' : 'border-transparent'} cursor-pointer transition-colors duration-200`}
+        {/* 2x regular wide */}
+        <div className="absolute left-[2px] top-[339px]">
+          <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">2x regular wide</p>
+        </div>
+        <div
+          className="absolute left-[2px] top-[357px] flex gap-[1px] cursor-pointer"
           onMouseDown={() => handleLayoutSelect('2x-regular-wide')}
         >
-          <div className="absolute left-0 top-0 w-[180px] h-[100px] border border-white bg-transparent flex items-start p-2">
-            <span className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">
-              2x regular wide
-            </span>
-          </div>
-          <div className="absolute left-[188px] top-0 w-[180px] h-[100px] border border-white bg-transparent"></div>
+          <div className={`w-[185px] h-[103px] border ${selectedLayout === '2x-regular-wide' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
+          <div className={`w-[185px] h-[103px] border ${selectedLayout === '2x-regular-wide' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
         </div>
 
-        {/* 3x square - all three boxes highlight together */}
-        <div 
-          className={`absolute left-2 top-[415px] w-[367px] h-[118px] border ${selectedLayout === '3x-square' ? 'border-[#FF0000]' : 'border-transparent'} cursor-pointer transition-colors duration-200`}
+        {/* 3x square */}
+        <div className="absolute left-[2px] top-[473px]">
+          <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">3x square</p>
+        </div>
+        <div
+          className="absolute left-[2px] top-[491px] flex gap-[1px] cursor-pointer"
           onMouseDown={() => handleLayoutSelect('3x-square')}
         >
-          <div className="absolute left-0 top-0 w-[118px] h-[118px] border border-white bg-transparent flex items-start p-2">
-            <span className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">
-              3x square
-            </span>
-          </div>
-          <div className="absolute left-[124px] top-0 w-[118px] h-[118px] border border-white bg-transparent"></div>
-          <div className="absolute left-[248px] top-0 w-[118px] h-[118px] border border-white bg-transparent"></div>
+          <div className={`w-[123px] h-[121px] border ${selectedLayout === '3x-square' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
+          <div className={`w-[123px] h-[121px] border ${selectedLayout === '3x-square' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
+          <div className={`w-[121px] h-[121px] border ${selectedLayout === '3x-square' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
         </div>
 
-        {/* collage - mixed sizes in one row */}
-        <div 
-          className={`absolute left-2 top-[543px] w-[367px] h-[80px] border ${selectedLayout === 'collage' ? 'border-[#FF0000]' : 'border-transparent'} cursor-pointer transition-colors duration-200`}
+        {/* collage */}
+        <div className="absolute left-[2px] top-[626px]">
+          <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">collage</p>
+        </div>
+        <div
+          className="absolute left-[2px] top-[644px] flex gap-[2px] cursor-pointer"
           onMouseDown={() => handleLayoutSelect('collage')}
         >
-          <div className="absolute left-0 top-0 w-[120px] h-[80px] border border-white bg-transparent flex items-start p-2">
-            <span className="font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%]">
-              collage
-            </span>
-          </div>
-          <div className="absolute left-[128px] top-0 w-[80px] h-[80px] border border-white bg-transparent"></div>
-          <div className="absolute left-[216px] top-0 w-[152px] h-[80px] border border-white bg-transparent"></div>
+          <div className={`w-[82px] h-[82px] border ${selectedLayout === 'collage' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
+          <div className={`w-[83px] h-[82px] border ${selectedLayout === 'collage' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
+          <div className={`w-[202px] h-[82px] border ${selectedLayout === 'collage' ? 'border-[#FF0000]' : 'border-white'} bg-transparent transition-colors duration-200`} />
         </div>
       </div>
 

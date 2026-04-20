@@ -1,3 +1,5 @@
+import { getUserByPrivyId, saveGridLayout } from './userService';
+
 interface GridLayoutPreference {
   userId: string;
   layoutId: string;
@@ -5,18 +7,11 @@ interface GridLayoutPreference {
   aspectRatio: string;
 }
 
-// Store user grid layout preferences
 let userGridPreferences: GridLayoutPreference[] = [];
 
-export const setUserGridLayout = (userId: string, layoutId: string, layoutName: string, aspectRatio: string): void => {
+export const setUserGridLayout = async (userId: string, layoutId: string, layoutName: string, aspectRatio: string): Promise<void> => {
   const existingIndex = userGridPreferences.findIndex(pref => pref.userId === userId);
-  
-  const newPreference: GridLayoutPreference = {
-    userId,
-    layoutId,
-    layoutName,
-    aspectRatio
-  };
+  const newPreference: GridLayoutPreference = { userId, layoutId, layoutName, aspectRatio };
 
   if (existingIndex >= 0) {
     userGridPreferences[existingIndex] = newPreference;
@@ -24,14 +19,21 @@ export const setUserGridLayout = (userId: string, layoutId: string, layoutName: 
     userGridPreferences.push(newPreference);
   }
 
-  // Save to localStorage
   if (typeof window !== 'undefined') {
     localStorage.setItem('scope_grid_preferences', JSON.stringify(userGridPreferences));
+  }
+
+  try {
+    const user = await getUserByPrivyId(userId);
+    if (user) {
+      await saveGridLayout(user.id, layoutId);
+    }
+  } catch (error) {
+    console.error('Error saving grid layout to Supabase:', error);
   }
 };
 
 export const getUserGridLayout = (userId: string): GridLayoutPreference | null => {
-  // Load from localStorage first
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('scope_grid_preferences');
     if (saved) {

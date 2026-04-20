@@ -21,6 +21,7 @@ export interface Profile {
   username: string
   bio: string
   profile_image_url?: string
+  grid_layout?: string
   created_at: string
   updated_at: string
 }

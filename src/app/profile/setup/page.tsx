@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
-import { saveProfile, uploadImage, getUserByPrivyId, syncUserWithSupabase } from "@/lib/userService";
+import { saveProfile, uploadImage, getUserByPrivyId, getProfileByUsername, syncUserWithSupabase } from "@/lib/userService";
 
 export default function ProfileSetup() {
   const router = useRouter();
@@ -15,81 +15,67 @@ export default function ProfileSetup() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
 
-  // Sync user with Supabase when component mounts
   useEffect(() => {
     const syncUser = async () => {
       if (user) {
-        console.log('Profile Setup: Syncing user with Supabase:', user.id);
         try {
-          const result = await syncUserWithSupabase(user);
-          console.log('User sync result:', result);
-        } catch (error) {
-          console.error('Failed to sync user with Supabase:', error);
+          await syncUserWithSupabase(user);
+        } catch (err) {
+          console.error('Failed to sync user with Supabase:', err);
         }
       }
     };
-
     syncUser();
   }, [user]);
 
   const handleContinue = async () => {
     setIsLoading(true);
-    
+    setError(null);
+    setUsernameError(null);
+
     try {
-      // Always save to localStorage first for immediate functionality
-      const profileData = {
-        username,
-        displayName,
-        bio,
-        profileImage
-      };
-      localStorage.setItem('userProfile', JSON.stringify(profileData));
+      if (!user) {
+        setError('You must be logged in to set up your profile.');
+        return;
+      }
 
-      // Try to save to Supabase if user exists and database is set up
-      if (user) {
-        try {
-          const supabaseUser = await getUserByPrivyId(user.id);
-          if (supabaseUser) {
-            let profileImageUrl = profileImage;
+      const supabaseUser = await getUserByPrivyId(user.id);
+      if (!supabaseUser) {
+        setError('Could not find your account. Please try logging out and back in.');
+        return;
+      }
 
-            // Upload image to Supabase Storage if a new file was selected
-            if (profileImageFile) {
-              profileImageUrl = await uploadImage(profileImageFile, 'profile-images');
-            }
+      let profileImageUrl: string | undefined = undefined;
+      if (profileImageFile) {
+        profileImageUrl = await uploadImage(profileImageFile, 'profile-images', user.id);
+      }
 
-            // Save profile to Supabase
-            await saveProfile(supabaseUser.id, {
-              displayName,
-              username,
-              bio,
-              profileImageUrl: profileImageUrl || undefined
-            });
-
-            // Update localStorage with Supabase URL if upload succeeded
-            if (profileImageUrl !== profileImage) {
-              const updatedProfileData = {
-                ...profileData,
-                profileImage: profileImageUrl
-              };
-              localStorage.setItem('userProfile', JSON.stringify(updatedProfileData));
-            }
-
-            console.log('Profile saved to Supabase successfully');
-          } else {
-            console.log('User not found in Supabase, using localStorage only');
-          }
-        } catch (supabaseError) {
-          console.log('Supabase save failed, continuing with localStorage:', supabaseError);
+      if (username) {
+        const existing = await getProfileByUsername(username);
+        if (existing && existing.user_id !== supabaseUser.id) {
+          setUsernameError('That username is already taken');
+          return;
         }
       }
 
-      // Always proceed to next step
+      const profilePayload = { userId: supabaseUser.id, displayName, username, bio, profileImageUrl };
+      console.log('Saving profile to Supabase:', profilePayload);
+
+      await saveProfile(supabaseUser.id, {
+        displayName,
+        username,
+        bio,
+        profileImageUrl,
+      });
+
       router.push("/profile/grid-layout");
-    } catch (error) {
-      console.error('Error in profile setup:', error);
-      // Even if everything fails, still proceed
-      router.push("/profile/grid-layout");
+    } catch (err) {
+      const e = err && typeof err === 'object' ? err as Record<string, unknown> : {};
+      console.error('Error saving profile:', [e.message, e.code, e.details, e.hint].filter(Boolean).join(' | ') || String(err));
+      setError('Failed to save your profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -98,37 +84,29 @@ export default function ProfileSetup() {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setProfileImageFile(file); // Store the actual file for upload
+      setProfileImageFile(file);
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileImage(e.target?.result as string);
-      };
+      reader.onload = (e) => setProfileImage(e.target?.result as string);
       reader.readAsDataURL(file);
     }
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
+  const triggerFileInput = () => fileInputRef.current?.click();
 
   return (
     <div className="bg-black relative w-[375px] h-[900px] mx-auto">
-      {/* Red dot logo - positioned 10px from corners */}
+      {/* Red dot logo */}
       <div className="absolute left-[10px] top-[10px] w-[15px] h-[15px]">
-        <div className="w-[15px] h-[15px] bg-[#FF0000] rounded-full"></div>
+        <div className="w-[15px] h-[15px] bg-[#FF0000] rounded-full" />
       </div>
 
-      {/* Profile Setup Title - stacked on separate lines, moved down */}
+      {/* Title */}
       <div className="absolute left-[50px] top-[75px]">
-        <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[11px] tracking-[-0.22px] leading-[140%]">
-          Profile
-        </p>
-        <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[11px] tracking-[-0.22px] leading-[140%]">
-          Setup
-        </p>
+        <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[11px] tracking-[-0.22px] leading-[140%]">Profile</p>
+        <p className="font-['IBM_Plex_Mono'] font-medium text-white text-[11px] tracking-[-0.22px] leading-[140%]">Setup</p>
       </div>
 
-      {/* Profile Picture Upload - 114x114px with large centered + */}
+      {/* Profile Picture Upload */}
       <div className="absolute left-[130px] top-[143px] w-[114px] h-[114px] border border-white bg-transparent cursor-pointer" onClick={triggerFileInput}>
         {profileImage ? (
           <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
@@ -138,16 +116,10 @@ export default function ProfileSetup() {
           </div>
         )}
       </div>
-      
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-        className="hidden"
-      />
 
-      {/* Name Input Field */}
+      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+
+      {/* Name Input */}
       <div className="absolute left-[50px] top-[300px] w-[275px] h-[45px] border border-white bg-transparent">
         <input
           type="text"
@@ -155,42 +127,42 @@ export default function ProfileSetup() {
           onChange={(e) => setDisplayName(e.target.value)}
           className="w-full h-full bg-transparent text-white outline-none px-[5px] font-['IBM_Plex_Mono'] font-medium text-[9px] tracking-[-0.18px] leading-[140%]"
           style={{ color: 'white' }}
-          placeholder=""
         />
         {!displayName && (
           <div className="absolute left-[5px] top-[14.5px] transform -translate-y-1/2 pointer-events-none">
-            <span className="font-['IBM_Plex_Mono'] font-medium text-[#818181] text-[9px] tracking-[-0.18px] leading-[140%]">
-              Name
-            </span>
+            <span className="font-['IBM_Plex_Mono'] font-medium text-[#818181] text-[9px] tracking-[-0.18px] leading-[140%]">Name</span>
           </div>
         )}
       </div>
 
-      {/* Username Input Field with @ prefix */}
+      {/* Username Input */}
       <div className="absolute left-[50px] top-[365px] w-[275px] h-[45px] border border-white bg-transparent">
         <div className="relative w-full h-full flex items-center">
-          <span className="absolute left-[5px] font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%] pointer-events-none z-10">
-            @
-          </span>
+          <span className="absolute left-[5px] font-['IBM_Plex_Mono'] font-medium text-white text-[9px] tracking-[-0.18px] leading-[140%] pointer-events-none z-10">@</span>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full h-full bg-transparent text-white outline-none pl-[15px] pr-[5px] font-['IBM_Plex_Mono'] font-medium text-[9px] tracking-[-0.18px] leading-[140%]"
             style={{ color: 'white' }}
-            placeholder=""
           />
         </div>
         {!username && (
           <div className="absolute left-[15px] top-[14.5px] transform -translate-y-1/2 pointer-events-none">
-            <span className="font-['IBM_Plex_Mono'] font-medium text-[#818181] text-[9px] tracking-[-0.18px] leading-[140%]">
-              Username
-            </span>
+            <span className="font-['IBM_Plex_Mono'] font-medium text-[#818181] text-[9px] tracking-[-0.18px] leading-[140%]">Username</span>
           </div>
         )}
       </div>
 
-      {/* Bio Input Field */}
+      {usernameError && (
+        <div className="absolute left-[50px] top-[412px]">
+          <span className="font-['IBM_Plex_Mono'] font-medium text-[#FF0000] text-[9px] tracking-[-0.18px] leading-[140%]">
+            {usernameError}
+          </span>
+        </div>
+      )}
+
+      {/* Bio Input */}
       <div className="absolute left-[50px] top-[430px] w-[275px] h-[130px] border border-white bg-transparent">
         <textarea
           value={bio}
@@ -198,43 +170,31 @@ export default function ProfileSetup() {
           maxLength={160}
           className="w-full h-full bg-transparent text-white outline-none px-[5px] py-[14.5px] font-['IBM_Plex_Mono'] font-medium text-[9px] tracking-[-0.18px] leading-[140%] resize-none"
           style={{ color: 'white' }}
-          placeholder=""
         />
         {!bio && (
           <div className="absolute left-[5px] top-[14.5px] transform -translate-y-1/2 pointer-events-none">
-            <span className="font-['IBM_Plex_Mono'] font-medium text-[#818181] text-[9px] tracking-[-0.18px] leading-[140%]">
-              Bio [ 160 character max ]
-            </span>
+            <span className="font-['IBM_Plex_Mono'] font-medium text-[#818181] text-[9px] tracking-[-0.18px] leading-[140%]">Bio [ 160 character max ]</span>
           </div>
         )}
       </div>
 
-      {/* Continue Button - white outline, white text, no fill */}
-      <div 
-        className="absolute left-[122px] top-[760px] w-[130px] h-[45px] z-50"
-        style={{ 
-          position: 'absolute',
-          left: '122px',
-          top: '760px',
-          width: '130px',
-          height: '45px',
-          zIndex: 50
-        }}
-      >
+      {/* Error message */}
+      {error && (
+        <div className="absolute left-[50px] top-[590px] w-[275px]">
+          <p className="font-['IBM_Plex_Mono'] font-medium text-[#FF0000] text-[9px] tracking-[-0.18px] leading-[140%]">
+            {error}
+          </p>
+        </div>
+      )}
+
+      {/* Continue Button */}
+      <div className="absolute left-[122px] top-[760px] w-[130px] h-[45px] z-50">
         <button
           onClick={handleContinue}
           disabled={isLoading}
-          className="w-full h-full border border-white bg-transparent text-white hover:bg-white hover:text-black transition-colors duration-200 flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'transparent',
-            border: '1px solid white',
-            color: 'white',
-            cursor: isLoading ? 'not-allowed' : 'pointer'
-          }}
+          className="w-full h-full border border-white bg-black text-white flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span className="font-['IBM_Plex_Mono'] font-medium text-white text-[11px] tracking-[-0.22px] leading-[140%] hover:text-black">
+          <span className="font-['IBM_Plex_Mono'] font-medium text-[11px] tracking-[-0.22px] leading-[140%]">
             {isLoading ? 'Saving...' : 'Continue'}
           </span>
         </button>

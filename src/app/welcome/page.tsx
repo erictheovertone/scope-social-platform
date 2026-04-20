@@ -2,17 +2,19 @@
 
 // import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useLogin } from '@privy-io/react-auth';
 
 // const imgScopeLogo1 = "/scope-logo.svg";
 
 export default function Welcome() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const { login } = useLogin({
     onComplete: () => {
       console.log('Authentication successful, redirecting...');
-      window.location.href = '/profile/setup';
+      router.push('/auth/callback');
     },
     onError: (error) => {
       console.log('Authentication error:', error);

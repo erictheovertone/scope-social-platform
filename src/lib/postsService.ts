@@ -58,18 +58,34 @@ export const createPost = async (postData: {
   return data;
 };
 
-export const getAllPosts = async (): Promise<Post[]> => {
-  const { data, error } = await supabase
+export const getAllPosts = async (): Promise<(Post & { profile_image_url?: string | null })[]> => {
+  const { data: posts, error } = await supabase
     .from('posts')
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (error) {
+  if (error || !posts) {
     console.error('Error fetching posts:', error);
     return [];
   }
 
-  return data || [];
+  // Batch-fetch profile images for all unique usernames in one query
+  const usernames = [...new Set(posts.map((p) => p.username).filter(Boolean))];
+  if (usernames.length === 0) return posts;
+
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('username, profile_image_url')
+    .in('username', usernames);
+
+  const avatarMap = new Map(
+    (profiles || []).map((p) => [p.username, p.profile_image_url as string | null])
+  );
+
+  return posts.map((post) => ({
+    ...post,
+    profile_image_url: avatarMap.get(post.username) ?? null,
+  }));
 };
 
 export const getUserPosts = async (userId: string): Promise<Post[]> => {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import BottomToolbar from "@/components/BottomToolbar";
+
 
 export default function Wallet() {
   const router = useRouter();
@@ -208,7 +208,6 @@ export default function Wallet() {
         </div>
       )}
 
-      <BottomToolbar />
     </div>
   );
 }

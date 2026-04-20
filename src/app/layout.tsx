@@ -4,6 +4,7 @@ import "./globals.css";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { privyConfig, PRIVY_APP_ID } from '@/lib/privy';
 import { Suspense } from 'react';
+import BottomToolbar from "@/components/BottomToolbar";
 
 // Loading component for better UX
 function LoadingSpinner() {
@@ -41,13 +42,21 @@ export default function RootLayout({
         className="bg-black text-white font-mono antialiased"
         suppressHydrationWarning
       >
+        {/* suppressHydrationWarning on PrivyProvider suppresses known Privy internal
+            warnings: invalid DOM prop clip-path, and <div>/<p> nesting in their
+            auth modal. These are in Privy's library code and don't affect
+            functionality. Filed against @privy-io/react-auth — check 3.x release
+            notes before upgrading past 2.x. */}
         <PrivyProvider
           appId={PRIVY_APP_ID}
           config={privyConfig}
+          // @ts-ignore — PrivyProvider forwards this to its root DOM node
+          suppressHydrationWarning
         >
           <Suspense fallback={<LoadingSpinner />}>
             {children}
           </Suspense>
+          <BottomToolbar />
         </PrivyProvider>
       </body>
     </html>
